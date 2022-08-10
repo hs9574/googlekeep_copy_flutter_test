@@ -34,7 +34,6 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   loadUser() async{
-    print('object');
     await Api().getUser().then((value) async{
       if(value is Map && value.isNotEmpty){
         dbUser.email = value['email'];
