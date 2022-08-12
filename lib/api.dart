@@ -13,6 +13,7 @@ class Api {
   final db = Util.db;
   final storage = Util.storage;
   final user = Util.auth.currentUser;
+  var apiUrl = 'http://54.180.207.141';
 
   /// 카카오 주소 -> 좌표 변환
   Future<Map<String,dynamic>> getCoordinate(String address) async {
@@ -47,7 +48,7 @@ class Api {
   }
 
   Future naverLogin(String accessToken) async{
-    String url = 'http://192.168.0.169:8090/users/login/naver';
+    String url = '$apiUrl/users/login/naver';
 
     var data = {
       "access_token" : accessToken
@@ -69,7 +70,7 @@ class Api {
   }
 
   Future kakaoLogin(String accessToken) async{
-    String url = 'http://192.168.0.169:8090/users/login/kakao';
+    String url = '$apiUrl/users/login/kakao';
 
     var data = {
       "access_token" : accessToken
@@ -91,7 +92,7 @@ class Api {
   }
 
   Future googleLogin(String idToken, String accessToken) async{
-    String url = 'http://192.168.0.169:8090/users/login/google';
+    String url = '$apiUrl/users/login/google';
 
     var data = {
       "id_token" : idToken,
@@ -114,7 +115,7 @@ class Api {
   }
 
   Future userLogin(String email, String password) async{
-    String url = 'http://192.168.0.169:8090/users/login/email';
+    String url = '$apiUrl/users/login/email';
     var data = {
       "email" : email,
       "password" : password
@@ -144,7 +145,7 @@ class Api {
   Future getUser() async{
     var box = await Hive.box('token');
     String token = box.get('access_token')??'';
-    String url = 'http://192.168.0.169:8090/users/me';
+    String url = '$apiUrl/users/me';
 
     if(token != ''){
       final response = await get(
@@ -166,7 +167,7 @@ class Api {
   }
 
   Future createUser(Map<String, String> user) async{
-    String url = 'http://192.168.0.169:8090/user';
+    String url = '$apiUrl/user';
 
     String uid = Util.getRandomString(25);
     user['uid'] = uid;
@@ -192,7 +193,7 @@ class Api {
     var box = await Hive.box('token');
     String token = box.get('access_token')??'';
 
-    String url = 'http://192.168.0.169:8090/project/$uid';
+    String url = '$apiUrl/project/$uid';
 
     final response = await get(
       Uri.parse(url),
@@ -211,7 +212,7 @@ class Api {
   }
 
   Future createProject(Map<String, dynamic> project) async{
-    String url = 'http://192.168.0.169:8090/project';
+    String url = '$apiUrl/project';
 
     final response = await post(
         Uri.parse(url),
@@ -230,7 +231,7 @@ class Api {
   }
 
   Future deleteProject(int projectId) async{
-    String url = 'http://192.168.0.169:8090/project/$projectId';
+    String url = '$apiUrl/project/$projectId';
 
     final response = await delete(Uri.parse(url));
 
@@ -240,7 +241,7 @@ class Api {
   }
 
   Future getGeneralData(int project_id) async {
-    String url = 'http://192.168.0.169:8090/general/$project_id';
+    String url = '$apiUrl/general/$project_id';
     final response = await get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -251,7 +252,7 @@ class Api {
   }
 
   Future createGeneralData(Map<String, dynamic> data) async{
-    String url = 'http://192.168.0.169:8090/general';
+    String url = '$apiUrl/general';
 
     final response = await post(
         Uri.parse(url),
@@ -270,7 +271,7 @@ class Api {
   }
 
   Future updateGeneralData(Map<String, dynamic> data) async{
-    String url = 'http://192.168.0.169:8090/general/${data['cnt']}';
+    String url = '$apiUrl/general/${data['cnt']}';
 
     final response = await put(
       Uri.parse(url),
@@ -289,7 +290,7 @@ class Api {
   }
 
   Future deleteGeneralData(int generalId) async {
-    String url = 'http://192.168.0.169:8090/project/general/$generalId';
+    String url = '$apiUrl/project/general/$generalId';
 
     final response = await delete(Uri.parse(url));
 
