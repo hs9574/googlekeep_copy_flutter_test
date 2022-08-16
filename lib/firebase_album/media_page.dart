@@ -103,24 +103,13 @@ class _MediaPageState extends State<MediaPage> {
     if(files.isNotEmpty){
       int mediaIndex = selectFileList.isEmpty ? 0 : (selectFileList.last.id + 1);
       for(XFile element in files){
-        String? thumbNailFile;
-        if(!isImage) {
-          thumbNailFile = await VideoThumbnail.thumbnailFile(
-            video: element.path,
-            thumbnailPath: null,
-            imageFormat: ImageFormat.JPEG,
-            quality: 50,
-            maxWidth: 512,
-          );
-        }
         Media media = Media(
-            id: mediaIndex,
-            url: element.path,
-            bytes: await element.readAsBytes(),
-            dateCreated: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
-            name: element.name,
-            isSaved: false,
-            thumbNailUrl: thumbNailFile??'',
+          id: mediaIndex,
+          url: element.path,
+          bytes: await element.readAsBytes(),
+          dateCreated: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
+          name: element.name,
+          isSaved: false,
         );
         selectFileList.add(media);
         mediaIndex++;

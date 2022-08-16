@@ -36,7 +36,6 @@ class General {
 
   Map<String, dynamic> toJson() {
     return {
-      "cnt" : id,
       "date_created": dateCreated,
       "title": title,
       "memo": memo,
@@ -85,9 +84,9 @@ class General {
 
 class Media {
   int id;
+  int parentId;
   String name;
   String url;
-  String thumbNailUrl;
   String dateCreated;
   double lat;
   double lon;
@@ -97,9 +96,9 @@ class Media {
 
   Media({
     this.id = 0,
+    this.parentId = 0,
     this.name = '',
     this.url = '',
-    this.thumbNailUrl = '',
     this.dateCreated = '',
     this.lat = 0,
     this.lon = 0,
@@ -112,9 +111,9 @@ class Media {
     DateTime dateTime = json['date_created'].toDate();
     return Media(
       id: json['id'],
+      parentId: json['parent_id'],
       name: json['name'],
       url: json['url'],
-      thumbNailUrl: json['thumbnail_url']??'',
       dateCreated: DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime),
       lat: (json['lat']??0).toDouble(),
       lon: (json['lon']??0).toDouble(),
@@ -126,7 +125,6 @@ class Media {
       "id" : id,
       "name" : name,
       "url" : url,
-      "thumbnail_url" : thumbNailUrl,
       "date_created": Timestamp.fromDate(DateFormat('yyyy-MM-dd HH:mm:ss').parse(dateCreated)),
       "lat" : lat,
       "lon" : lon,

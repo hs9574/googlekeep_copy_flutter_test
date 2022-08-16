@@ -1,19 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
-
+import 'package:http_parser/http_parser.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fastapi_project/firebase_database/models/general_model.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:fastapi_project/utils/util.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 class Api {
   final db = Util.db;
   final storage = Util.storage;
   final user = Util.auth.currentUser;
   var apiUrl = 'http://54.180.207.141';
+  // var apiUrl = 'http://192.168.0.169:8090';
 
   /// 카카오 주소 -> 좌표 변환
   Future<Map<String,dynamic>> getCoordinate(String address) async {
@@ -252,7 +252,7 @@ class Api {
   }
 
   Future createGeneralData(Map<String, dynamic> data) async{
-    String url = '$apiUrl/general';
+    String url = '$apiUrl/general/';
 
     final response = await post(
         Uri.parse(url),
@@ -290,7 +290,7 @@ class Api {
   }
 
   Future deleteGeneralData(int generalId) async {
-    String url = '$apiUrl/project/general/$generalId';
+    String url = '$apiUrl/general/$generalId';
 
     final response = await delete(Uri.parse(url));
 
@@ -299,25 +299,27 @@ class Api {
     }
   }
 
-  Future<String> uploadGeneralMedia(int projectId, Media file) async{
-    var ref = storage.ref().child(user!.uid).child('$projectId');
-    String url = '';
-    String thumbUrl = '';
-    await ref.child(file.name).putData(file.bytes!).then((task) async{
-      url = await task.ref.getDownloadURL();
-      if(file.thumbNailUrl != ''){
-        var thumbNailFile = await VideoThumbnail.thumbnailData(
-            video: url,
-            quality: 50,
-            maxWidth: 512,
-            imageFormat: ImageFormat.PNG
-        );
-        await ref.child('${file.name}atThumbNail.png').putData(thumbNailFile!).then((thumbTask) async{
-          thumbUrl = await thumbTask.ref.getDownloadURL();
-        });
-      }
-    });
-    return '$url#$thumbUrl';
+  Future uploadGeneralMedia(Media file) async{
+    String url = '$apiUrl/general/media';
+
+    var request = MultipartRequest('POST', Uri.parse(url));
+    request.files.add(await MultipartFile.fromBytes('file', file.bytes!,
+      contentType: MediaType('application', 'octet-stream'),
+      filename: file.name
+    ));
+    request.fields['parent_id'] = file.id.toString();
+    request.fields['lat'] = file.lat.toStringAsFixed(0);
+    request.fields['lon'] = file.lon.toStringAsFixed(0);
+
+    var response = await request.send();
+    var responseData = await response.stream.toBytes();
+    var responseString = String.fromCharCodes(responseData);
+
+    if(response.statusCode == 201){
+      return jsonDecode(responseString);
+    }else{
+      throw Exception('uploadGeneralMedia 에러');
+    }
   }
 
   Future deleteGeneralMedia(int projectId, String fileName) async{

@@ -83,11 +83,8 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             width: double.infinity,
             color: Colors.black,
             child: Center(
-              child: widget.media.thumbNailUrl.contains('flutter_firebase/cache') ? Image.file(
-                File(widget.media.thumbNailUrl),
-                fit: BoxFit.cover,
-              ) : CachedNetworkImage(
-                imageUrl: widget.media.thumbNailUrl,
+              child: CachedNetworkImage(
+                imageUrl: widget.media.url,
                 fit: BoxFit.cover,
                 placeholder: (context, url) => Center(child: CircularProgressIndicator()),
                 errorWidget: (context, url, error) => Icon(Icons.error),
@@ -116,11 +113,8 @@ class VideoThumbNailWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return media.thumbNailUrl.contains('flutter_firebase/cache') ? Image.file(
-      File(media.thumbNailUrl),
-      fit: BoxFit.cover,
-    ) : CachedNetworkImage(
-      imageUrl: media.thumbNailUrl,
+    return CachedNetworkImage(
+      imageUrl: media.url,
       fit: BoxFit.cover,
       placeholder: (context, url) {
         return SizedBox(

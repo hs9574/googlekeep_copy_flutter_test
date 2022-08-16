@@ -10,7 +10,7 @@ class ImageThumbNailWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return media.url.contains('flutter_firebase/cache') ? Image.file(
+    return media.url.contains('fastapi_project/cache') ? Image.file(
       File(media.url),
       fit: BoxFit.cover,
     ) : CachedNetworkImage(
@@ -38,7 +38,7 @@ class ImageFullViewWidget extends StatelessWidget {
     return Center(
       child: Hero(
         tag: media.id,
-        child: media.url.contains('flutter_firebase/cache') ? Image.file(
+        child: media.url.contains('fastapi_project/cache') ? Image.file(
           File(media.url),
           fit: BoxFit.cover,
         ) : CachedNetworkImage(

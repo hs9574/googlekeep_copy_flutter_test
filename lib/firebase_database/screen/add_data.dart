@@ -11,7 +11,6 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:fastapi_project/utils/util.dart';
 import 'package:fastapi_project/widget/textfield_widget.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 class AddDataWidget extends StatefulWidget {
   final int projectId;
@@ -91,16 +90,6 @@ class _AddDataWidgetState extends State<AddDataWidget> {
     if(files.isNotEmpty){
       int mediaIndex = mediaList.isEmpty ? 0 : (mediaList.last.id + 1);
       for(XFile element in files){
-        String? thumbNailFile;
-        if(!isImage) {
-          thumbNailFile = await VideoThumbnail.thumbnailFile(
-            video: element.path,
-            thumbnailPath: null,
-            imageFormat: ImageFormat.JPEG,
-            quality: 50,
-            maxWidth: 512,
-          );
-        }
         Media media = Media(
           id: mediaIndex,
           url: element.path,
@@ -108,7 +97,6 @@ class _AddDataWidgetState extends State<AddDataWidget> {
           dateCreated: DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
           name: element.name,
           isSaved: false,
-          thumbNailUrl: thumbNailFile??'',
         );
         mediaList.add(media);
         mediaIndex++;
@@ -128,7 +116,6 @@ class _AddDataWidgetState extends State<AddDataWidget> {
       });
       General item = General.getInstance();
       if(widget.item == null){
-        // await uploadStorage(itemId);
         item = General(
           userId: dbUser.uid,
           projectId: widget.projectId,
@@ -137,8 +124,10 @@ class _AddDataWidgetState extends State<AddDataWidget> {
           memo: _textControllerMap['메모']!.text,
           mediaList: mediaList.where((element) => element.isRemoved == false).toList()
         );
-        // await uploadStorage(item.id);
-        await Api().createGeneralData(item.toJson());
+        await Api().createGeneralData(item.toJson()).then((value) async{
+          print(value);
+          await uploadStorage(item.id);
+        });
       }else{
         // await uploadStorage(widget.item!.id);
         item = General(
@@ -165,9 +154,9 @@ class _AddDataWidgetState extends State<AddDataWidget> {
   Future uploadStorage(int lastIndex) async{
     for(Media file in mediaList){
       if(!file.isSaved && !file.isRemoved){
-        String urls = await Api().uploadGeneralMedia(widget.projectId, file);
-        file.url = urls.split('#')[0];
-        file.thumbNailUrl = urls.split('#')[1];
+        await Api().uploadGeneralMedia(file).then((value) {
+          file.url = value['url'];
+        });
       }else if(file.isSaved && file.isRemoved){
         await Api().deleteGeneralMedia(widget.projectId, file.name);
       }
