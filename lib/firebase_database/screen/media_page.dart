@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:intl/intl.dart';
-
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,7 +15,6 @@ import 'package:fastapi_project/widget/image_view_widget.dart';
 import 'package:fastapi_project/widget/video_player_widget.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:video_thumbnail/video_thumbnail.dart';
 
 class MediaPage extends StatefulWidget {
   final String title;
@@ -29,6 +27,7 @@ class MediaPage extends StatefulWidget {
 class _MediaPageState extends State<MediaPage> {
   bool removeMode = false;
   bool isGridView = false;
+  bool init = true;
   List<General> removeList = [];
   Project _selectedProject = Project.getInstance();
   int _bottomNavIndex = 0;
@@ -42,12 +41,22 @@ class _MediaPageState extends State<MediaPage> {
   StreamController<List<General>> _generalStream = StreamController();
 
   loadGeneral(int projectId) async{
-    await Api().getGeneralData(projectId).then((value) {
+    await Api().getGeneralData(projectId).then((value) async{
       List<General> generalList = [];
       for(var item in value){
-        generalList.add(General.fromJson(item));
+        General general = General.fromJson(item);
+        await Api().getGeneralMedia(general.id).then((medias) {
+          List<Media> mediaList = [];
+          for(var item in medias){
+            Media media = Media.fromJson(item);
+            mediaList.add(media);
+          }
+          general.mediaList = mediaList;
+        });
+        generalList.add(general);
       }
       _generalStream.add(generalList);
+      init = false;
     });
   }
   
@@ -124,7 +133,7 @@ class _MediaPageState extends State<MediaPage> {
   }
 
   Widget fileTypeWidget(Media media, bool isThumbNail) {
-    String extension = Util.checkMediaTypeToUpperCase(media.name);
+    String extension = Util.checkMediaTypeToUpperCase(media.url);
     Widget widget = Container();
     switch(extension){
       case 'PNG':
@@ -183,7 +192,9 @@ class _MediaPageState extends State<MediaPage> {
             );
           }else if(state is Selected){
             _selectedProject = state.project;
-            loadGeneral(_selectedProject.projectId);
+            if(init){
+              loadGeneral(_selectedProject.projectId);
+            }
             return StreamBuilder<List<General>>(
               stream: _generalStream.stream,
               builder: (context, snapshot){

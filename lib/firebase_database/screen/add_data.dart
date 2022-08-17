@@ -125,11 +125,10 @@ class _AddDataWidgetState extends State<AddDataWidget> {
           mediaList: mediaList.where((element) => element.isRemoved == false).toList()
         );
         await Api().createGeneralData(item.toJson()).then((value) async{
-          print(value);
-          await uploadStorage(item.id);
+          await uploadStorage(value['cnt']);
         });
       }else{
-        // await uploadStorage(widget.item!.id);
+        await uploadStorage(widget.item!.id);
         item = General(
           id: widget.item!.id,
           userId: dbUser.uid,
@@ -139,7 +138,7 @@ class _AddDataWidgetState extends State<AddDataWidget> {
           memo: _textControllerMap['메모']!.text,
           mediaList: mediaList.where((element) => element.isRemoved == false).toList()
         );
-        await Api().updateGeneralData(item.toJson());
+        await Api().updateGeneralData(item.toJson(), item.id);
       }
       setState((){
         loading = false;
@@ -151,14 +150,15 @@ class _AddDataWidgetState extends State<AddDataWidget> {
     }
   }
 
-  Future uploadStorage(int lastIndex) async{
+  Future uploadStorage(int itemId) async{
     for(Media file in mediaList){
+      file.parentId = itemId;
       if(!file.isSaved && !file.isRemoved){
         await Api().uploadGeneralMedia(file).then((value) {
           file.url = value['url'];
         });
       }else if(file.isSaved && file.isRemoved){
-        await Api().deleteGeneralMedia(widget.projectId, file.name);
+        await Api().deleteGeneralMedia(file.id);
       }
     }
   }
@@ -172,7 +172,7 @@ class _AddDataWidgetState extends State<AddDataWidget> {
   }
 
   Widget fileTypeWidget(Media media, bool isThumbNail) {
-    String extension = Util.checkMediaTypeToUpperCase(media.name);
+    String extension = Util.checkMediaTypeToUpperCase(media.url);
     Widget widget = Container();
     switch(extension){
       case 'PNG':

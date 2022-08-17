@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -25,10 +22,6 @@ List<String> GENERAL_COLUMN = [
 const List<String> GENERAL_TYPE = ["하천", "호소", "시설물", "경작지", "오염원", "기타"];
 
 class Util {
-  static final auth = FirebaseAuth.instance;
-  static final db = FirebaseFirestore.instance;
-  static final storage = FirebaseStorage.instance;
-
   static String getRandomString(int length) {
     var chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
     Random rnd = Random();

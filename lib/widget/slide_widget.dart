@@ -31,7 +31,7 @@ class _SlideWidgetState extends State<SlideWidget> {
   final PopupController popupLayerController = PopupController();
 
   Widget fileTypeWidget(Media media) {
-    String extension = Util.checkMediaTypeToUpperCase(media.name);
+    String extension = Util.checkMediaTypeToUpperCase(media.url);
     Widget widget = Container();
     switch(extension){
       case 'PNG':

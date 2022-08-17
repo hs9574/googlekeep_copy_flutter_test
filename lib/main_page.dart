@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fastapi_project/firebase_album/media_page.dart';
+import 'package:fastapi_project/firebase_database/screen/media_page.dart';
 import 'package:fastapi_project/firebase_login/bloc/auth_bloc.dart';
 
 GlobalKey<ScaffoldState> mainPageKey = GlobalKey<ScaffoldState>();

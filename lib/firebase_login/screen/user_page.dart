@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fastapi_project/firebase_database/screen/project_page.dart';
 import 'package:fastapi_project/firebase_login/bloc/auth_bloc.dart';
-import 'package:fastapi_project/firebase_login/screen/login_page.dart';
 import 'package:fastapi_project/firebase_login/model/user_model.dart';
-import 'package:fastapi_project/utils/util.dart';
 import 'package:fastapi_project/widget/alert_dialog_widget.dart';
 
 class UserPage extends StatefulWidget {
@@ -20,7 +18,6 @@ class _UserPageState extends State<UserPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    Util.db.collection('users');
   }
 
   @override

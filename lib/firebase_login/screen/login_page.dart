@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fastapi_project/firebase_database/screen/project_page.dart';
 import 'package:fastapi_project/firebase_login/bloc/auth_bloc.dart';
-import 'package:fastapi_project/utils/util.dart';
 import 'package:fastapi_project/widget/textfield_widget.dart';
 import 'package:hive/hive.dart';
 
@@ -18,7 +17,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final user = Util.auth.currentUser;
 
   @override
   void initState() {

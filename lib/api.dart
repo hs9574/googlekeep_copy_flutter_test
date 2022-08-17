@@ -1,17 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http_parser/http_parser.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:fastapi_project/firebase_database/models/general_model.dart';
 import 'package:hive/hive.dart';
 import 'package:http/http.dart';
 import 'package:fastapi_project/utils/util.dart';
 
 class Api {
-  final db = Util.db;
-  final storage = Util.storage;
-  final user = Util.auth.currentUser;
   var apiUrl = 'http://54.180.207.141';
   // var apiUrl = 'http://192.168.0.169:8090';
 
@@ -167,7 +162,7 @@ class Api {
   }
 
   Future createUser(Map<String, String> user) async{
-    String url = '$apiUrl/user';
+    String url = '$apiUrl/users';
 
     String uid = Util.getRandomString(25);
     user['uid'] = uid;
@@ -270,8 +265,8 @@ class Api {
     }
   }
 
-  Future updateGeneralData(Map<String, dynamic> data) async{
-    String url = '$apiUrl/general/${data['cnt']}';
+  Future updateGeneralData(Map<String, dynamic> data, int id) async{
+    String url = '$apiUrl/general/$id';
 
     final response = await put(
       Uri.parse(url),
@@ -299,63 +294,47 @@ class Api {
     }
   }
 
+  Future getGeneralMedia(int general_id) async{
+    String url = '$apiUrl/general/media/$general_id';
+
+    final response = await get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      return jsonDecode(utf8.decode(response.bodyBytes));
+    } else {
+      throw Exception('미디어 리스트 가져오기 실패');
+    }
+  }
+
   Future uploadGeneralMedia(Media file) async{
     String url = '$apiUrl/general/media';
-
     var request = MultipartRequest('POST', Uri.parse(url));
     request.files.add(await MultipartFile.fromBytes('file', file.bytes!,
       contentType: MediaType('application', 'octet-stream'),
       filename: file.name
     ));
-    request.fields['parent_id'] = file.id.toString();
-    request.fields['lat'] = file.lat.toStringAsFixed(0);
-    request.fields['lon'] = file.lon.toStringAsFixed(0);
+    request.fields['parent_id'] = file.parentId.toString();
+    request.fields['lat'] = file.lat.toString();
+    request.fields['lon'] = file.lon.toString();
 
     var response = await request.send();
     var responseData = await response.stream.toBytes();
     var responseString = String.fromCharCodes(responseData);
 
-    if(response.statusCode == 201){
+    if(response.statusCode == 200){
       return jsonDecode(responseString);
     }else{
       throw Exception('uploadGeneralMedia 에러');
     }
   }
 
-  Future deleteGeneralMedia(int projectId, String fileName) async{
-    var ref = storage.ref().child(user!.uid).child('$projectId');
-    await ref.child(fileName).delete();
-    try{
-      await ref.child('${fileName}atThumbNail.png').delete();
-    }on FirebaseException catch (e){
-      e.code;
+  Future deleteGeneralMedia(int media_id) async{
+    String url = '$apiUrl/general/media/$media_id';
+
+    var response = await delete(Uri.parse(url));
+
+    if(response.statusCode != 200){
+      throw Exception('미디어 삭제 실패');
     }
-  }
-
-  Future deleteGeneralMediaAll(int projectId) async{
-    var storageRef = storage.ref().child(user!.uid).child('$projectId');
-    await storageRef.listAll().then((medias) async{
-      for(var media in medias.items){
-        await media.delete();
-      }
-    });
-  }
-
-  Future<double> getUserMediaSize() async{
-    var ref = storage.ref().child(user!.uid);
-    double mediasSize = 0;
-    await ref.listAll().then((projects) async{
-      List<String> projectList = projects.prefixes.map((e) => e.name).toList();
-      for(String projectId in projectList){
-        await ref.child(projectId).listAll().then((medias) async{
-          for(var media in medias.items){
-            await media.getMetadata().then((data) {
-              mediasSize += data.size!;
-            });
-          }
-        });
-      }
-    });
-    return mediasSize;
   }
 }

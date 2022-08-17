@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:fastapi_project/firebase_login/firebase_auth_remote_data_source.dart';
-import 'package:fastapi_project/utils/util.dart';
-import 'package:kakao_flutter_sdk/kakao_flutter_sdk.dart' as kakao;
-import 'package:flutter_naver_login/flutter_naver_login.dart' as naver;
 
 class TestPage extends StatefulWidget {
   const TestPage({Key? key}) : super(key: key);
@@ -13,40 +8,9 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage> {
-  final _firebaseAuthDataSource = FirebaseAuthRemoteDataSource();
 
   void socialLogIn(String social) async{
-    print(Util.auth.currentUser!.email);
-    if(social == 'kakao'){
-      final kakao.OAuthToken kakaoToken;
-      try {
-        if(await kakao.isKakaoTalkInstalled()){
-          kakaoToken = await kakao.UserApi.instance.loginWithKakaoTalk();
-        }else{
-          kakaoToken = await kakao.UserApi.instance.loginWithKakaoAccount();
-        }
-        final token = await _firebaseAuthDataSource.createCustomToken({
-          "accessToken" : kakaoToken.accessToken
-        }, 'kakao');
 
-        await Util.auth.signInWithCustomToken(token);
-        print(Util.auth.currentUser!.displayName);
-        print(Util.auth.currentUser!.email);
-        print(Util.auth.currentUser!.uid);
-      } on kakao.KakaoAuthException catch (error) {
-        print('카카오톡으로 로그인 실패 ${error.message}');
-
-      }
-    }else if(social == 'naver'){
-      await naver.FlutterNaverLogin.isLoggedIn.then((value) async{
-        if(value){
-          await naver.FlutterNaverLogin.logOutAndDeleteToken();
-        }else {
-          naver.NaverLoginResult res = await naver.FlutterNaverLogin.logIn();
-          print(res.account.nickname);
-        }
-      });
-    }
   }
 
   @override

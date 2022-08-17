@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'dart:typed_data';
 
@@ -108,26 +107,14 @@ class Media {
   });
 
   factory Media.fromJson(Map<String, dynamic> json){
-    DateTime dateTime = json['date_created'].toDate();
+    DateTime dateTime = DateFormat('yyyy-MM-ddTHH:mm:ss').parse(json['date_created']);
     return Media(
       id: json['id'],
       parentId: json['parent_id'],
-      name: json['name'],
       url: json['url'],
       dateCreated: DateFormat('yyyy-MM-dd HH:mm:ss').format(dateTime),
       lat: (json['lat']??0).toDouble(),
       lon: (json['lon']??0).toDouble(),
     );
-  }
-
-  Map<String, dynamic> toFirestore() {
-    return {
-      "id" : id,
-      "name" : name,
-      "url" : url,
-      "date_created": Timestamp.fromDate(DateFormat('yyyy-MM-dd HH:mm:ss').parse(dateCreated)),
-      "lat" : lat,
-      "lon" : lon,
-    };
   }
 }
