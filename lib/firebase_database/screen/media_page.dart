@@ -15,6 +15,7 @@ import 'package:fastapi_project/widget/image_view_widget.dart';
 import 'package:fastapi_project/widget/video_player_widget.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 class MediaPage extends StatefulWidget {
   final String title;
@@ -45,7 +46,7 @@ class _MediaPageState extends State<MediaPage> {
       List<General> generalList = [];
       for(var item in value){
         General general = General.fromJson(item);
-        await Api().getGeneralMedia(general.id).then((medias) {
+        await Api().getGeneralMedia(general.id).then((medias) async{
           List<Media> mediaList = [];
           for(var item in medias){
             Media media = Media.fromJson(item);

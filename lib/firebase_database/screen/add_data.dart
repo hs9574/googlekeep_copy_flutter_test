@@ -11,6 +11,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:fastapi_project/utils/util.dart';
 import 'package:fastapi_project/widget/textfield_widget.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 class AddDataWidget extends StatefulWidget {
   final int projectId;
@@ -241,7 +242,7 @@ class _AddDataWidgetState extends State<AddDataWidget> {
                       int index = (i*3)+j;
                       Media media = medias[index];
                       return Padding(
-                        padding: j != rowIndex - 1 ? const EdgeInsets.only(right: 20) : EdgeInsets.zero,
+                        padding: j != rowIndex - 1 ? EdgeInsets.only(right: rowIndex == 2 ? 20 : 50) : EdgeInsets.zero,
                         child: SizedBox(
                           height: MediaQuery.of(context).size.height,
                           child: InkWell(

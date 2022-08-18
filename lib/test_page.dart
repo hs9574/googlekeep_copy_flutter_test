@@ -1,4 +1,8 @@
+import 'package:chewie/chewie.dart';
+import 'package:fastapi_project/utils/util.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 
 class TestPage extends StatefulWidget {
   const TestPage({Key? key}) : super(key: key);
@@ -8,14 +12,55 @@ class TestPage extends StatefulWidget {
 }
 
 class _TestPageState extends State<TestPage> {
+  late VideoPlayerController _videoPlayerController;
+  ChewieController? _chewieController;
 
-  void socialLogIn(String social) async{
+  Future<void> initializePlayer() async {
+    _videoPlayerController = VideoPlayerController.network('http://54.180.207.141/static/images/7/20220818141214_image_picker9035545767520228139.webm');
+    await _videoPlayerController.initialize().onError((error, stackTrace) {
+      Util.toastMessage('해당 영상은 재생할 수 없습니다.');
+      Navigator.pop(context);
+      return;
+    });
+    _createChewieController();
+    setState(() {});
+  }
 
+  void _createChewieController() {
+    _chewieController = ChewieController(
+      videoPlayerController: _videoPlayerController,
+    );
+
+    if(kIsWeb){
+      _chewieController!.addListener(() async{  //전체화면에서 다시 돌아갈때 화면안나타는 현상 해결
+        if(!_chewieController!.isFullScreen) {
+          bool isPlaying = _chewieController!.isPlaying;
+          await _chewieController!.videoPlayerController.position.then((value) async{
+            _videoPlayerController = VideoPlayerController.network('http://54.180.207.141/static/images/7/20220818141214_image_picker9035545767520228139.webm');
+            await Future.wait([_videoPlayerController.initialize()]);
+            _createChewieController();
+            await _videoPlayerController.seekTo(value!);
+            isPlaying ? _chewieController!.play() : _chewieController!.pause();
+            setState(() {});
+          });
+        }
+      });
+    }
   }
 
   @override
   void initState() {
     super.initState();
+    initializePlayer();
+  }
+
+  @override
+  void dispose() {
+    _videoPlayerController.dispose();
+    if(_chewieController != null){
+      _chewieController!.dispose();
+    }
+    super.dispose();
   }
 
   @override
@@ -25,63 +70,12 @@ class _TestPageState extends State<TestPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            InkWell(
-              onTap: (){
-                socialLogIn('naver');
-              },
-              child: Container(
-                width: 300,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: const BorderRadius.all(Radius.circular(5)),
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      const Text('네이버 로그인', style: TextStyle(height: 1),),
-                      Positioned(
-                        left: 8,
-                        child: Container(
-                          width: 30,
-                          height: 30,
-                          child: const Image(image: AssetImage('assets/images/login_naver.png'), fit: BoxFit.fill, height: 30, width: 30,),
-                        ),
-                      ),
-                    ]
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
-            InkWell(
-              onTap: (){
-                socialLogIn('kakao');
-              },
-              child: Container(
-                width: 300,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: const BorderRadius.all(Radius.circular(5)),
-                  border: Border.all(color: Colors.grey),
-                ),
-                child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      const Text('카카오 로그인', style: TextStyle(height: 1),),
-                      Positioned(
-                        left: 8,
-                        child: Container(
-                          width: 30,
-                          height: 30,
-                          child: const Image(image: AssetImage('assets/images/login_kakao.png'), fit: BoxFit.fill, height: 30, width: 30,),
-                        ),
-                      ),
-                    ]
-                ),
-              ),
-            )
+            _chewieController != null && _chewieController!.videoPlayerController.value.isInitialized ?
+            Container(
+              height: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
+              color: Colors.black,
+              child: Chewie(controller: _chewieController!)
+            ) : Container()
           ],
         ),
       ),

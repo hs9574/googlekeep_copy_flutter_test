@@ -86,6 +86,7 @@ class Media {
   int parentId;
   String name;
   String url;
+  String thumbnail;
   String dateCreated;
   double lat;
   double lon;
@@ -98,6 +99,7 @@ class Media {
     this.parentId = 0,
     this.name = '',
     this.url = '',
+    this.thumbnail = '',
     this.dateCreated = '',
     this.lat = 0,
     this.lon = 0,
