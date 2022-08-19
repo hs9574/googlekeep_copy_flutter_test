@@ -7,7 +7,7 @@ import 'package:http/http.dart';
 import 'package:fastapi_project/utils/util.dart';
 
 class Api {
-  var apiUrl = 'http://54.180.207.141';
+  var apiUrl = 'https://aaespa.shop';
   // var apiUrl = 'http://192.168.0.169:8090';
 
   /// 카카오 주소 -> 좌표 변환

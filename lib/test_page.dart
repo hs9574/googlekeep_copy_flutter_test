@@ -16,7 +16,7 @@ class _TestPageState extends State<TestPage> {
   ChewieController? _chewieController;
 
   Future<void> initializePlayer() async {
-    _videoPlayerController = VideoPlayerController.network('http://54.180.207.141/static/images/7/20220818141214_image_picker9035545767520228139.webm');
+    _videoPlayerController = VideoPlayerController.network('https://aaespa.shop/static/images/7/20220818141214_image_picker9035545767520228139.webm');
     await _videoPlayerController.initialize().onError((error, stackTrace) {
       Util.toastMessage('해당 영상은 재생할 수 없습니다.');
       Navigator.pop(context);
@@ -36,7 +36,7 @@ class _TestPageState extends State<TestPage> {
         if(!_chewieController!.isFullScreen) {
           bool isPlaying = _chewieController!.isPlaying;
           await _chewieController!.videoPlayerController.position.then((value) async{
-            _videoPlayerController = VideoPlayerController.network('http://54.180.207.141/static/images/7/20220818141214_image_picker9035545767520228139.webm');
+            _videoPlayerController = VideoPlayerController.network('https://aaespa.shop/static/images/7/20220818141214_image_picker9035545767520228139.webm');
             await Future.wait([_videoPlayerController.initialize()]);
             _createChewieController();
             await _videoPlayerController.seekTo(value!);
