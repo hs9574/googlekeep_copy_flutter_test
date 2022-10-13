@@ -10,8 +10,8 @@ import 'package:latlong2/latlong.dart';
 
 const Color DEFAULT_BUTTON_COLOR = Color(0xff366cf6);
 
-const String KAKAO_RESTAPI_KEY = '6688bfc92ad09373c11642605c453bb8'; // 회사키
-const String VWORD_MAP_KEY = 'B4CD2B4A-39A2-32C6-8439-F5D3E26FCE6D';
+const String KAKAO_RESTAPI_KEY = '카카오 key';
+const String VWORD_MAP_KEY = 'VWORLD key';
 
 List<String> GENERAL_COLUMN = [
   "코드",
